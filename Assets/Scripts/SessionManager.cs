@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using Unity.Netcode;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Multiplayer;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SessionManager : Singleton<SessionManager>
 {
@@ -61,10 +63,32 @@ public class SessionManager : Singleton<SessionManager>
             IsPrivate = false,
             PlayerProperties = playerProperties
         }.WithRelayNetwork();
-        Debug.Log(playerProperties.ContainsKey("playerName"));
         ActiveSession = await MultiplayerService.Instance.CreateSessionAsync(options);
         SessionUI.Instance.ShowSessionCode(ActiveSession.Code);
         Debug.Log($"Session {ActiveSession.Id} created. Join code: {ActiveSession.Code}");
+
+        await WaitForPlayers();
+    }
+
+    async UniTask WaitForPlayers()
+    {
+        while (ActiveSession.Players.Count < 2)
+        {
+            Debug.Log("Waiting for another player...");
+            await UniTask.Delay(1000);
+        }
+
+        Debug.Log("Both players connected! Starting game...");
+
+        // Scene transition by host
+        if (NetworkManager.Singleton.IsHost && NetworkManager.Singleton.SceneManager != null)
+        {
+            NetworkManager.Singleton.SceneManager.LoadScene("LobbyScene", LoadSceneMode.Single);
+        }
+        else
+        {
+            Debug.LogError("SceneManager missing or not host.");
+        }
     }
 
     async UniTaskVoid JoinSessionByID(string sessionID)

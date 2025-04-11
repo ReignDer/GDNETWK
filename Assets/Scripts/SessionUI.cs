@@ -1,4 +1,5 @@
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,12 +19,16 @@ public class SessionUI : Singleton<SessionUI>
     private void StartClient()
     {
         SessionManager.Instance.JoinSessionByCode(inputField.text);
+        
         DeactivateButton();
     }
 
     private void StartHost()
     {
+       
         SessionManager.Instance.StartSessionAsHost();
+        //NetworkScenemanager.Instance.changeScene();
+       
         DeactivateButton();
     }
 
