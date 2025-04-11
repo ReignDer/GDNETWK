@@ -12,7 +12,7 @@ public class SessionManager : Singleton<SessionManager>
 {
     ISession activeSession;
 
-    ISession ActiveSession
+    public ISession ActiveSession
     {
         get => activeSession;
         set
