@@ -20,7 +20,7 @@ public class SessionUI : Singleton<SessionUI>
     {
         SessionManager.Instance.JoinSessionByCode(inputField.text);
         
-        DeactivateButton();
+        //DeactivateButton();
     }
 
     private void StartHost()

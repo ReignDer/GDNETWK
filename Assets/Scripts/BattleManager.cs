@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,6 +10,10 @@ public class BattleManager : NetworkSingleton<BattleManager>
 {
     public PokemonData playerPokemon;
     public PokemonData enemyPokemon;
+    public Transform player;
+    public Transform enemy;
+    public Transform spawnPlayer;
+    public Transform spawnEnemy;
 
     public Slider playerHPBar;
     public Slider enemyHPBar;
@@ -28,6 +33,17 @@ public class BattleManager : NetworkSingleton<BattleManager>
 
     private void Start()
     {
+        if (localPlayerId == 0)
+        {
+            player.position = spawnPlayer.position;
+            enemy.position = spawnEnemy.position;
+        }
+        else
+        {
+            enemy.position = spawnPlayer.position;
+            player.position = spawnEnemy.position;
+        }
+
         moveButton1.onClick.AddListener(() => UseMove(10));
         moveButton2.onClick.AddListener(() => UseMove(100));
     }
