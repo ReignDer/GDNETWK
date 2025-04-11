@@ -22,12 +22,14 @@ public class BattleManager : NetworkSingleton<BattleManager>
     private bool enemyMoveSelected = false;
     private int playerMoveDamage;
     private int enemyMoveDamage;
+    private bool playerWin = false;
+    private bool enemyWin = false;
 
 
     private void Start()
     {
         moveButton1.onClick.AddListener(() => UseMove(10));
-        moveButton2.onClick.AddListener(() => UseMove(20));
+        moveButton2.onClick.AddListener(() => UseMove(100));
     }
 
     private void Update()
@@ -70,8 +72,13 @@ public class BattleManager : NetworkSingleton<BattleManager>
     {
         yield return new WaitForSeconds(2f);
         
+        
         enemyPokemon.TakeDamage(playerMoveDamage); 
+        CheckWinCondition();
+        if(playerWin) yield break;
         playerPokemon.TakeDamage(enemyMoveDamage); 
+        CheckWinCondition();
+        if(enemyWin) yield break;
 
        
         playerMoveSelected = false;
@@ -81,7 +88,7 @@ public class BattleManager : NetworkSingleton<BattleManager>
         UpdateHealthBarsClientRpc();
 
         
-        CheckWinCondition();
+        
     }
 
     [ServerRpc]
@@ -100,9 +107,15 @@ public class BattleManager : NetworkSingleton<BattleManager>
     void CheckWinCondition()
     {
         if (playerPokemon.currentHP.Value <= 0)
+        {
+            enemyWin = true;
             EndGameClientRpc("Player 2 Wins!");
+        }
         else if (enemyPokemon.currentHP.Value <= 0)
+        {
+            playerWin = true;
             EndGameClientRpc("Player 1 Wins!");
+        }
     }
 
     [ClientRpc]
@@ -111,7 +124,38 @@ public class BattleManager : NetworkSingleton<BattleManager>
         battleLog.text = result;
         moveButton1.interactable = false;
         moveButton2.interactable = false;
+        
+        StartCoroutine(DisconnectAfterDelay(3f));
     }
+
+    private IEnumerator DisconnectAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (IsServer)
+        {
+            var clientsToDisconnect = new List<ulong>();
+
+            foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
+            {
+                clientsToDisconnect.Add(client.ClientId);
+            }
+
+            foreach (var clientId in clientsToDisconnect)
+            {
+                NetworkManager.Singleton.DisconnectClient(clientId);
+            }
+            
+            NetworkManager.Singleton.Shutdown();
+        }
+        else
+        {
+            NetworkManager.Singleton.Shutdown();
+        }
+        
+        UnityEngine.SceneManagement.SceneManager.LoadScene("SampleScene");
+    }
+
     [ClientRpc]
     void ShowMoveSequenceClientRpc(string move1Text, string move2Text)
     {
