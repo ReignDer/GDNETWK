@@ -1,4 +1,3 @@
-using Unity.Services.Multiplayer;
 using UnityEngine;
 
 public class ActionScripts : MonoBehaviour
@@ -18,45 +17,12 @@ public class ActionScripts : MonoBehaviour
         
     }
 
-    public void attack()
+    void attack()
     {
-        if(turnManager.enemyPlayer.isShielded == true)
+        if (player == turnManager.turn)
         {
-            turnManager.curPlayer.Hp -= 5;
+            
         }
-        else
-            turnManager.enemyPlayer.Hp -= 10;
-
-
-        endTurn();
-    }
-
-    public void defend()
-    {
-        turnManager.curPlayer.isShielded = true;
-
-        endTurn();
-    }
-
-    public void counter()
-    {
-        turnManager.enemyPlayer.isShielded = false;
-        turnManager.enemyPlayer.Hp -= 5;
-
-        endTurn();
-    }
-
-    public void skip()
-    {
-        turnManager.curPlayer.isShielded = false;
-
-        endTurn();
-    }
-
-    void endTurn()
-    {
-        turnManager.enemyPlayer.isShielded = false;
-        turnManager.UpdateTurn();
     }
 
 
