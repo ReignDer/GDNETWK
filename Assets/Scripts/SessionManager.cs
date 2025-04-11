@@ -63,12 +63,14 @@ public class SessionManager : Singleton<SessionManager>
             IsPrivate = false,
             PlayerProperties = playerProperties
         }.WithRelayNetwork();
+        
         ActiveSession = await MultiplayerService.Instance.CreateSessionAsync(options);
         SessionUI.Instance.ShowSessionCode(ActiveSession.Code);
         Debug.Log($"Session {ActiveSession.Id} created. Join code: {ActiveSession.Code}");
-
         await WaitForPlayers();
+        
     }
+    
 
     async UniTask WaitForPlayers()
     {
@@ -83,7 +85,7 @@ public class SessionManager : Singleton<SessionManager>
         // Scene transition by host
         if (NetworkManager.Singleton.IsHost && NetworkManager.Singleton.SceneManager != null)
         {
-            NetworkManager.Singleton.SceneManager.LoadScene("LobbyScene", LoadSceneMode.Single);
+            NetworkManager.Singleton.SceneManager.LoadScene("BattleScene", LoadSceneMode.Single);
         }
         else
         {
