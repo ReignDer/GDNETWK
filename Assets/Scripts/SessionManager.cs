@@ -61,8 +61,9 @@ public class SessionManager : Singleton<SessionManager>
             IsPrivate = false,
             PlayerProperties = playerProperties
         }.WithRelayNetwork();
-        
+        Debug.Log(playerProperties.ContainsKey("playerName"));
         ActiveSession = await MultiplayerService.Instance.CreateSessionAsync(options);
+        SessionUI.Instance.ShowSessionCode(ActiveSession.Code);
         Debug.Log($"Session {ActiveSession.Id} created. Join code: {ActiveSession.Code}");
     }
 

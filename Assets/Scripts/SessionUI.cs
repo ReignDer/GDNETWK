@@ -2,10 +2,11 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SessionUI : MonoBehaviour
+public class SessionUI : Singleton<SessionUI>
 {
     [SerializeField] Button createButton;
     [SerializeField] private Button joinButton;
+    [SerializeField] private TMP_Text sessionCodeText;
     TMP_InputField inputField;
     void OnEnable()
     {
@@ -13,7 +14,7 @@ public class SessionUI : MonoBehaviour
         createButton.onClick.AddListener(StartHost);
         joinButton.onClick.AddListener(StartClient);
     }
-
+    
     private void StartClient()
     {
         SessionManager.Instance.JoinSessionByCode(inputField.text);
@@ -31,4 +32,10 @@ public class SessionUI : MonoBehaviour
         createButton.interactable = false;
         joinButton.interactable = false;
     }
+
+    public void ShowSessionCode(string sessionCode)
+    {
+        sessionCodeText.text = sessionCode;
+    }
+    
 }
